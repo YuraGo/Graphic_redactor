@@ -14,7 +14,8 @@ import java.util.*;
 
 public class ActionJ {
     public static HashMap<String, StrokeLine> listOfDrawsLines = new HashMap<>();
-    public static HashMap<String, Circle> listOfDrawsCircles =new HashMap<>();
+    public static HashMap<String, Circle> listOfDrawsCircles = new HashMap<>();
+    public static HashMap<String, BezierLine> listOfDrawsBezier = new HashMap<>();
     //private static GeometricObject item = new GeometricObject();
 
     public static HashMap<String,String> test = new HashMap<>();
@@ -35,11 +36,15 @@ public class ActionJ {
         listOfDraws.getItems().clear();
 
         for (Map.Entry<String,  StrokeLine> entry : listOfDrawsLines.entrySet()) {
-            listOfDraws.getItems().add(entry.getKey());
+            listOfDraws.getItems().add(entry.getKey() + " line");
         }
 
         for (Map.Entry<String,  Circle> entry : listOfDrawsCircles.entrySet()) {
-            listOfDraws.getItems().add(entry.getKey());
+            listOfDraws.getItems().add(entry.getKey() + " circle");
+        }
+
+        for (Map.Entry<String,  BezierLine> entry : listOfDrawsBezier.entrySet()) {
+            listOfDraws.getItems().add(entry.getKey() + " Bezier curve");
         }
     }
 
@@ -64,6 +69,12 @@ public class ActionJ {
                 gcDrawLines(gc, commandLine[5]);
                 if (check != null) return check;
                 break;
+            case "bez":
+                if ( commandLine.length != 8) return "Wrong command";
+                check = createBezier(commandLine);
+                gcDrawBezier(gc, commandLine[7]);
+                if (check != null) return check;
+                break;
             case "del":
                 check = delDraw(commandLine[1], gc);
                 if (check != null) return check; // draw error
@@ -80,6 +91,11 @@ public class ActionJ {
             case "dash":
                 if ( commandLine.length != 3) return "Wrong command";
                 check = changeDrawDash(commandLine[2], Double.parseDouble(commandLine[1]), gc);
+                if ( check != null) return check;
+                break;
+            case "rotation":
+                if ( commandLine.length != 3) return "Wrong command";
+                check = rotationDraw(commandLine[2], Double.parseDouble(commandLine[1]), gc);
                 if ( check != null) return check;
                 break;
             default:
@@ -106,16 +122,41 @@ public class ActionJ {
                 listOfDrawsCircles.get(id).getRadius(), listOfDrawsCircles.get(id).getRadius() );
     }
 
+    public static void gcDrawBezier(GraphicsContext gc, String id){
+        gc.beginPath();
+        gc.setStroke(listOfDrawsBezier.get(id).getColor());
+        gc.setLineDashes(listOfDrawsBezier.get(id).getDashes());//110 102 130 80 130 62.5
+        gc.bezierCurveTo(listOfDrawsBezier.get(id).getPointX1(), listOfDrawsBezier.get(id).getPointY1(),
+                listOfDrawsBezier.get(id).getPointX2(), listOfDrawsBezier.get(id).getPointY2(),
+                listOfDrawsBezier.get(id).getPointX3(), listOfDrawsBezier.get(id).getPointY3());
+        gc.stroke();
+    }
+
     public static void drawShapes(GraphicsContext gc) {
         gc.clearRect(0,0,800,500);
         //gc.setFill(Color.BLACK);
         //gc.setLineCap(StrokeLineCap.BUTT);
         //gc.setLineDashOffset(10);
-        gc.setLineDashes(8);
+        //gc.setLineDashes(8);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
         gc.strokeRect(0,0,800,500);
         gc.strokeOval(50,50 , 50,50);
+        //gc.beginPath();
+        //gc.moveTo(10,10); for fill gc.fill()
+
+        //gc.quadraticCurveTo(20,20,60,90);
+
+        //gc.beginPath();
+        //gc.moveTo(75,40);
+        //gc.bezierCurveTo(75,37,70,25,50,25);
+//        gc.bezierCurveTo(20,25,20,62.5,20,62.5);
+//        gc.bezierCurveTo(20,80,40,102,75,120);
+//        gc.bezierCurveTo(110,102,130,80,130,62.5);
+//        gc.bezierCurveTo(130,62.5,130,25,100,25);
+//        gc.bezierCurveTo(85,25,75,37,75,40);
+        //gc.stroke();
+
         //gc.strokeLine(0, 0, 100, 100);
         gc.fillPolygon(new double[]{10, 40, 10, 40},
                 new double[]{210, 210, 240, 240}, 4);
@@ -164,22 +205,55 @@ public class ActionJ {
         return null;
     }
 
-    public static String showParam(Object box){
-        String result = "";
+    public String createBezier(String[] command){
+        if ( listOfDrawsBezier.containsKey(command[7]) ) return "Error, Bezier curve already exist";
 
-        if ( listOfDrawsLines.containsKey((String) box)) {
-            result = "Object: line;  Name = " + listOfDrawsLines.get((String) box).getId()
-                    + ";  X1 = " + listOfDrawsLines.get((String) box).getPointX1()
-                    + ";  Y1 = " + listOfDrawsLines.get((String) box).getPointY1()
-                    + ";  X2 = " + listOfDrawsLines.get((String) box).getPointX2()
-                    + ";  Y2 = " + listOfDrawsLines.get((String) box).getPointY2();
+        try{
+            for(int i = 1; i < 7; i++){
+                Double.parseDouble(command[i]);
+            }
+        }catch (NumberFormatException e) {
+            return "Error in cordinate";
         }
 
-        if ( listOfDrawsCircles.containsKey((String) box)){
-            result = "Object: line;  Name = " + listOfDrawsCircles.get((String) box).getId()
-                    + ";  X = " + listOfDrawsCircles.get((String) box).getPointX1()
-                    + ";  Y = " + listOfDrawsCircles.get((String) box).getPointY1()
-                    + ";  radius = " + listOfDrawsCircles.get((String) box).getRadius();
+        listOfDrawsBezier.put(command[7], new BezierLine (
+                Double.parseDouble(command[1]),
+                Double.parseDouble(command[2]),
+                Double.parseDouble(command[3]),
+                Double.parseDouble(command[4]),
+                Double.parseDouble(command[5]),
+                Double.parseDouble(command[6]),
+                command[7]));
+        return null;
+    }
+
+    public static String showParam(Object box){
+        String result = "";
+        String str = box.toString();
+        String[] id = str.split(" ");
+        if ( listOfDrawsLines.containsKey(id[0])) {
+            result = "Object: line;  Name = " + listOfDrawsLines.get(id[0]).getId()
+                    + ";  X1 = " + listOfDrawsLines.get(id[0]).getPointX1()
+                    + ";  Y1 = " + listOfDrawsLines.get(id[0]).getPointY1()
+                    + ";  X2 = " + listOfDrawsLines.get(id[0]).getPointX2()
+                    + ";  Y2 = " + listOfDrawsLines.get(id[0]).getPointY2();
+        }
+
+        if ( listOfDrawsCircles.containsKey(id[0])){
+            result = "Object: line;  Name = " + listOfDrawsCircles.get(id[0]).getId()
+                    + ";  X = " + listOfDrawsCircles.get(id[0]).getPointX1()
+                    + ";  Y = " + listOfDrawsCircles.get(id[0]).getPointY1()
+                    + ";  radius = " + listOfDrawsCircles.get(id[0]).getRadius();
+        }
+
+        if ( listOfDrawsBezier.containsKey(id[0])) {
+            result = "Object: line;  Name = " + listOfDrawsBezier.get(id[0]).getId()
+                    + ";  X1 = " + listOfDrawsBezier.get(id[0]).getPointX1()
+                    + ";  Y1 = " + listOfDrawsBezier.get(id[0]).getPointY1()
+                    + ";  X2 = " + listOfDrawsBezier.get(id[0]).getPointX2()
+                    + ";  Y2 = " + listOfDrawsBezier.get(id[0]).getPointY2()
+                    + ";  X3 = " + listOfDrawsBezier.get(id[0]).getPointX3()
+                    + ";  Y3 = " + listOfDrawsBezier.get(id[0]).getPointY3();
         }
 
         return result;
@@ -189,6 +263,7 @@ public class ActionJ {
 
         listOfDrawsLines.remove(name);
         listOfDrawsCircles.remove(name);
+        listOfDrawsBezier.remove(name);
         drawShapes(gc);
         for (Map.Entry< String, Circle> entry : listOfDrawsCircles.entrySet()){
             gcDrawLines(gc, entry.getKey());
@@ -196,6 +271,9 @@ public class ActionJ {
 
         for (Map.Entry< String, StrokeLine> entry : listOfDrawsLines.entrySet()){
             gcDrawLines(gc, entry.getKey());
+        }
+        for (Map.Entry< String, BezierLine> entry : listOfDrawsBezier.entrySet()){
+            gcDrawBezier(gc, entry.getKey());
         }
 
         return null;
@@ -212,11 +290,16 @@ public class ActionJ {
             if (entry.getKey().equals("id")) continue;
             gcDrawLines(gc, entry.getKey());
         }
+        for (Map.Entry< String, BezierLine> entry : listOfDrawsBezier.entrySet()){
+            if (entry.getKey().equals("id")) continue;
+            gcDrawBezier(gc, entry.getKey());
+        }
     }
 
     private void delAll (){
         listOfDrawsLines.clear();
         listOfDrawsCircles.clear();
+        listOfDrawsBezier.clear();
     }
 
     private String changeDrawDash(String id, double dash, GraphicsContext gc){
@@ -230,6 +313,12 @@ public class ActionJ {
             listOfDrawsCircles.get(id).setDashes(dash);
             update(gc,id);
             gcDrawCircles(gc, id);
+            return null;
+        }
+        if (listOfDrawsBezier.containsKey(id)) {
+            listOfDrawsBezier.get(id).setDashes(dash);
+            update(gc,id);
+            gcDrawBezier(gc,id);
             return null;
         }
         return "Wrong name";
@@ -285,6 +374,30 @@ public class ActionJ {
         } else return "Wrong name";
 
         return null;
+    }
+
+    private String rotationDraw(String id, double angle, GraphicsContext gc){
+        if (listOfDrawsLines.containsKey(id)){
+            angle =  angle*Math.PI/180;
+            double x1, y1, x2, y2;
+            double centerX = ( Math.abs(listOfDrawsLines.get(id).getPointX2() + listOfDrawsLines.get(id).getPointX1()) )/2;
+            double centerY = ( Math.abs(listOfDrawsLines.get(id).getPointY2() + listOfDrawsLines.get(id).getPointY1()) )/2;
+            x1 = listOfDrawsLines.get(id).getPointX1() - centerX;
+            y1 = listOfDrawsLines.get(id).getPointY1() - centerY;
+            x2 = listOfDrawsLines.get(id).getPointX2() - centerX;
+            y2 = listOfDrawsLines.get(id).getPointY2() - centerY;
+
+            listOfDrawsLines.get(id).setPoints( x1*Math.cos(angle) - y1*Math.sin(angle) + centerX
+                    , x1*Math.sin(angle) + y1*Math.cos(angle)  + centerY );
+
+            listOfDrawsLines.get(id).setPointL( x2*Math.cos(angle) - y2*Math.sin(angle) + centerX
+                    , x2*Math.sin(angle) + y2*Math.cos(angle)  + centerY );
+
+            update(gc, id);
+            gcDrawLines(gc,id);
+            return null;
+        }
+        return "Wrong name";
     }
 
     }
