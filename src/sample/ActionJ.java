@@ -12,14 +12,10 @@ import javafx.scene.paint.Color;
 
 import java.util.*;
 
-public class ActionJ {
-    public static HashMap<String, StrokeLine> listOfDrawsLines = new HashMap<>();
-    public static HashMap<String, Circle> listOfDrawsCircles = new HashMap<>();
-    public static HashMap<String, BezierLine> listOfDrawsBezier = new HashMap<>();
-    //private static GeometricObject item = new GeometricObject();
-
-    public static HashMap<String,String> test = new HashMap<>();
-    public static boolean check = false;
+class ActionJ {
+    private static HashMap<String, StrokeLine> listOfDrawsLines = new HashMap<>();
+    private static HashMap<String, Circle> listOfDrawsCircles = new HashMap<>();
+    private static HashMap<String, BezierLine> listOfDrawsBezier = new HashMap<>();
 //    public <Hbox> CreateAll(<Hbox> hbox) {
 //
 //        Button button1 = new Button("Add");
@@ -31,7 +27,7 @@ public class ActionJ {
 //        hbox.getChildren().addAll(button1, button2);
 //    }
 
-    public static void setListOfDraws(ComboBox listOfDraws){
+    static void setListOfDraws(ComboBox listOfDraws){
 
         listOfDraws.getItems().clear();
 
@@ -48,7 +44,7 @@ public class ActionJ {
         }
     }
 
-    public String runCommand(GraphicsContext gc, ComboBox listOfDraws,String command){
+    String runCommand(GraphicsContext gc, ComboBox listOfDraws,String command){
         String check;
         String[] commandLine = command.split(" ");
         setListOfDraws(listOfDraws);
@@ -107,7 +103,7 @@ public class ActionJ {
         return command;
     }
 
-    public static void gcDrawLines(GraphicsContext gc, String id){
+    private static void gcDrawLines(GraphicsContext gc, String id){
         gc.setStroke(listOfDrawsLines.get(id).getColor());
         gc.setLineDashes(listOfDrawsLines.get(id).getDashes());
         gc.strokeLine(listOfDrawsLines.get(id).getPointX1(), listOfDrawsLines.get(id).getPointY1(),
@@ -115,14 +111,14 @@ public class ActionJ {
 
     }
 
-    public static void gcDrawCircles(GraphicsContext gc, String id){
+    private static void gcDrawCircles(GraphicsContext gc, String id){
         gc.setStroke(listOfDrawsCircles.get(id).getColor());
         gc.setLineDashes(listOfDrawsCircles.get(id).getDashes());
         gc.strokeOval(listOfDrawsCircles.get(id).getPointX1(), listOfDrawsCircles.get(id).getPointY1(),
                 listOfDrawsCircles.get(id).getRadius(), listOfDrawsCircles.get(id).getRadius() );
     }
 
-    public static void gcDrawBezier(GraphicsContext gc, String id){
+    private static void gcDrawBezier(GraphicsContext gc, String id){
         gc.beginPath();
         gc.setStroke(listOfDrawsBezier.get(id).getColor());
         gc.setLineDashes(listOfDrawsBezier.get(id).getDashes());//110 102 130 80 130 62.5
@@ -132,7 +128,7 @@ public class ActionJ {
         gc.stroke();
     }
 
-    public static void drawShapes(GraphicsContext gc) {
+    private static void drawShapes(GraphicsContext gc) {
         gc.clearRect(0,0,800,500);
         //gc.setFill(Color.BLACK);
         //gc.setLineCap(StrokeLineCap.BUTT);
@@ -184,7 +180,7 @@ public class ActionJ {
         return null;
     }
 
-    public String createCircle(String[] command){
+    private String createCircle(String[] command){
 
         if ( listOfDrawsCircles.containsKey(command[4]) ) return "Error";
 
@@ -205,7 +201,7 @@ public class ActionJ {
         return null;
     }
 
-    public String createBezier(String[] command){
+    private String createBezier(String[] command){
         if ( listOfDrawsBezier.containsKey(command[7]) ) return "Error, Bezier curve already exist";
 
         try{
@@ -227,7 +223,7 @@ public class ActionJ {
         return null;
     }
 
-    public static String showParam(Object box){
+    static String showParam(Object box){
         String result = "";
         String str = box.toString();
         String[] id = str.split(" ");
@@ -282,16 +278,16 @@ public class ActionJ {
     private static void update(GraphicsContext gc, String id){
         drawShapes(gc);
         for (Map.Entry< String, Circle> entry : listOfDrawsCircles.entrySet()){
-            if (entry.getKey().equals("id")) continue;
+            if (entry.getKey().equals(id)) continue;
             gcDrawCircles(gc, entry.getKey());
         }
 
         for (Map.Entry< String, StrokeLine> entry : listOfDrawsLines.entrySet()){
-            if (entry.getKey().equals("id")) continue;
+            if (entry.getKey().equals(id)) continue;
             gcDrawLines(gc, entry.getKey());
         }
         for (Map.Entry< String, BezierLine> entry : listOfDrawsBezier.entrySet()){
-            if (entry.getKey().equals("id")) continue;
+            if (entry.getKey().equals(id)) continue;
             gcDrawBezier(gc, entry.getKey());
         }
     }
@@ -350,6 +346,31 @@ public class ActionJ {
             gcDrawLines(gc,id);
             return null;
         }
+
+        if (listOfDrawsBezier.containsKey(id)) {
+            switch (color) {
+                case "black":
+                    listOfDrawsBezier.get(id).setColor(Color.BLACK);
+                    break;
+                case "blue":
+                    listOfDrawsBezier.get(id).setColor(Color.BLUE);
+                    break;
+                case "yellow":
+                    listOfDrawsBezier.get(id).setColor(Color.YELLOW);
+                    break;
+                case "red":
+                    listOfDrawsBezier.get(id).setColor(Color.RED);
+                    break;
+                case "green":
+                    listOfDrawsBezier.get(id).setColor(Color.GREEN);
+                    break;
+                default:
+                    return "Wrong color";
+            }
+            gcDrawBezier(gc,id);
+            return null;
+        }
+
         if (listOfDrawsCircles.containsKey(id)) {
             switch (color) {
                 case "black":
@@ -373,9 +394,11 @@ public class ActionJ {
             gcDrawCircles(gc, id);
         } else return "Wrong name";
 
+
+
         return null;
     }
-
+    // povorot bezier po pervoi to4ki dlya raznoobraziya
     private String rotationDraw(String id, double angle, GraphicsContext gc){
         if (listOfDrawsLines.containsKey(id)){
             angle =  angle*Math.PI/180;
@@ -397,6 +420,28 @@ public class ActionJ {
             gcDrawLines(gc,id);
             return null;
         }
+
+        if (listOfDrawsBezier.containsKey(id)){
+            angle =  angle*Math.PI/180;
+            double x1, y1, x2, y2;
+            double centerX = listOfDrawsBezier.get(id).getPointX1() ;
+            double centerY = listOfDrawsBezier.get(id).getPointY1();
+            x1 = listOfDrawsBezier.get(id).getPointX2() - centerX;
+            y1 = listOfDrawsBezier.get(id).getPointY2() - centerY;
+            x2 = listOfDrawsBezier.get(id).getPointX3() - centerX;
+            y2 = listOfDrawsBezier.get(id).getPointY3() - centerY;
+
+            listOfDrawsBezier.get(id).setPointB2( x1*Math.cos(angle) - y1*Math.sin(angle) + centerX
+                    , x1*Math.sin(angle) + y1*Math.cos(angle)  + centerY );
+
+            listOfDrawsBezier.get(id).setPointB3( x2*Math.cos(angle) - y2*Math.sin(angle) + centerX
+                    , x2*Math.sin(angle) + y2*Math.cos(angle)  + centerY );
+
+            update(gc, id);
+            gcDrawBezier(gc,id);
+            return null;
+        }
+
         return "Wrong name";
     }
 
