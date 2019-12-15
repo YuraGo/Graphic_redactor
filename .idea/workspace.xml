@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="Bezier complete">
+    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="Near point">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/redKG/sample/ActionJ.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/redKG/sample/ActionJ.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/redKG/sample/GeometricObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/redKG/sample/GeometricObject.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sample/ActionJ.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample/ActionJ.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/sample/GeometricObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/sample/GeometricObject.java" afterDir="false" />
     </list>
@@ -210,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1575665334432</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Near point">
+      <created>1576383323583</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1576383323583</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -235,6 +243,14 @@
     <MESSAGE value="Change objects done" />
     <MESSAGE value="Bezier update" />
     <MESSAGE value="Bezier complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bezier complete" />
+    <MESSAGE value="Near point" />
+    <option name="LAST_COMMIT_MESSAGE" value="Near point" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="((String)((HashMap.Node)listOfDrawsLines.entrySet().toArray()[0]).getKey()).value" custom="java.util.HashMap.Node,java.lang.String" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

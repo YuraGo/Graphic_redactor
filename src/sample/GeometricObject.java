@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 public class GeometricObject {
-
+    private int copyCounter;
     private String id;
     private double pointX1, pointY1;
     private Color color;
@@ -14,6 +14,7 @@ public class GeometricObject {
     private double dashes;
 
     public GeometricObject(double pointX1, double pointY1, String id ){
+        this.copyCounter = 0;
         this.pointX1 = pointX1;
         this.pointY1 = 500 - pointY1;
         this.id = id;
@@ -58,6 +59,13 @@ public class GeometricObject {
         this.color = color;
     }
 
+    public void incCopyCounter(){
+        this.copyCounter+=1;
+    }
+
+    public int getCopyCounter(){
+        return this.copyCounter;
+    }
 
     //private static HashMap<String, GeometricObject> allDraws = new HashMap<>();
 
@@ -72,6 +80,10 @@ class StrokeLine extends GeometricObject {
         super(pointX1,pointY1,id);
         this.pointX2 = pointX2;
         this.pointY2 = 500 - pointY2;
+    }
+
+    public StrokeLine(StrokeLine copyOf){
+        this(copyOf.getPointX1(), 500-copyOf.getPointY1(), copyOf.pointX2, 500-copyOf.pointY2, copyOf.getId()+copyOf.getCopyCounter());
     }
 
     public double getPointX2(){
@@ -151,6 +163,10 @@ class Circle extends GeometricObject{
         this.radius = radius;
     }
 
+    public Circle(Circle copy){
+        this(copy.getPointX1(), 500 - copy.getPointY1(), copy.getRadius(), copy.getId()+copy.getCopyCounter());
+    }
+
     public double getRadius(){
         return this.radius;
     }
@@ -214,6 +230,10 @@ class BezierLine extends GeometricObject{
         this.pointY3 = 500 - pointY3;
     }
 
+    public BezierLine(BezierLine c){
+        this(c.getPointX1(), 500-c.getPointY1(), c.pointX2, 500-c.pointY2, c.pointX3, 500-c.pointY3, c.getId()+c.getCopyCounter());
+    }
+
     public double getPointX2(){
         return this.pointX2;
     }
@@ -238,5 +258,22 @@ class BezierLine extends GeometricObject{
     public void setPointB3(double x3, double y3){
         this.pointX3 = x3;
         this.pointY3 = y3;
+    }
+
+    public String getFunc(double x, double y){
+        double xC, yC, prevL = 0, countL, xA=x, yA=y; // bez 10 10 100 100 190 10 a
+
+        for( double i = 0; i <= 1; i+=0.005){
+            xC = (1-i)*(1-i)*this.getPointX1() + 2*(1-i)*i*this.pointX2 + i*i*this.pointX3;
+            yC = (1-i)*(1-i)*(500-this.getPointY1()) + 2*(1-i)*i*(500-this.pointY2) + i*i*(500-this.pointY3);
+            System.out.println("X: " + xC + " Y: " + yC);
+            countL = (xC-x)*(xC-x)+(yC - y)*(yC - y);
+            if (prevL > countL || i == 0){
+                prevL = countL;
+                xA = xC;
+                yA = yC;
+            }
+        }
+        return "x: " + Math.round(xA) + " ; y: " +  Math.round(yA);
     }
 }
