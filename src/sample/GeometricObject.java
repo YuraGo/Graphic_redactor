@@ -65,7 +65,7 @@ public class GeometricObject {
 
 }
 
-class StrokeLine extends GeometricObject{
+class StrokeLine extends GeometricObject {
     private double pointX2, pointY2;
 
     public StrokeLine(double pointX1,double pointY1,double pointX2,double pointY2, String id ){
@@ -87,14 +87,67 @@ class StrokeLine extends GeometricObject{
         this.pointY2 = y2;
     }
 
+    public String getFunc(double x, double y) {
+        y = 500 - y;
+        double A, B, C, leng, lengAC, lengBC;
+        String ans = new String("");
+        B = (this.pointX2 - this.getPointX1());
+        A = (this.getPointY1() - this.pointY2);
+        leng = Math.sqrt(A * A + B * B);
+        C = this.getPointX1() * this.pointY2 - this.pointX2 * this.getPointY1();
+
+        // проверка принадлежности точки к прямой near 80 80 b    line 10 10 70 70 b
+        if ((A * x + B * y + C) == 0) {
+            // first vector BC, second AC
+            lengAC = Math.max(Math.sqrt((this.pointX2 - x) * (this.pointX2 - x) + (this.pointY2 - y) * (this.pointY2 - y)),
+                    Math.sqrt((this.getPointX1() - x) * (this.getPointX1() - x) + (this.getPointY1() - y) * (this.getPointY1() - y)));
+
+            // проверка точки на отрезке
+            if (leng > lengAC) return ans = "x: " + x + " ; y: " + (500-y);
+            lengBC = Math.sqrt((this.pointX2 - x) * (this.pointX2 - x) + (this.pointY2 - y) * (this.pointY2 - y));
+            lengAC = Math.sqrt((this.getPointX1() - x) * (this.getPointX1() - x) + (this.getPointY1() - y) * (this.getPointY1() - y));
+
+            if( lengAC > lengBC) {
+                ans = "x: " + this.pointX2 + " ; y: " + (500 - this.pointY2);
+            }else{
+                ans = "x: " + this.getPointX1() + " ; y: " + (500 - this.getPointY1());
+            }
+
+        } else {
+            double xP1, yP1, xP2, yP2;
+            //yP1 = (C+A*xP1)/(-B);
+            xP1 = (-A * C - y * B * A + x * B * B) / (B * B + A * A);
+            yP1 = (C + A * xP1) / (-B);
+            ans = "x: " + xP1 + " ; y: " + (500-yP1);
+            // line 10 10 200 200 a
+            lengBC = Math.sqrt((this.pointX2 - xP1) * (this.pointX2 - xP1) + (this.pointY2 - yP1) * (this.pointY2 - yP1));
+            lengAC = Math.sqrt((this.getPointX1() - xP1) * (this.getPointX1() - xP1) + (this.getPointY1() - yP1) * (this.getPointY1() - yP1));
+            System.out.println(ans);
+
+            if ( leng > Math.max(lengAC, lengBC) ){
+                System.out.println("inside");
+                return ans;
+            }
+
+            if( lengAC > lengBC) {
+                ans = "x: " + this.pointX2 + " ; y: " + (500 - this.pointY2);
+            }else{
+                ans = "x: " + this.getPointX1() + " ; y: " + (500 - this.getPointY1());
+            }
+        }
+
+        return ans;
+    }
 }
 
 class Circle extends GeometricObject{
 
-    private double radius;
+    private double radius, realX, realY;
 
     public Circle(double pointX1, double pointY1, double radius, String id){
-        super(pointX1,pointY1,id);
+        super(pointX1, pointY1,id);
+        realX = pointX1;
+        realY = 500 - pointY1;
         this.radius = radius;
     }
 
@@ -109,6 +162,44 @@ class Circle extends GeometricObject{
     public void setPoints(double x1, double y1, double radius){
         setPoints(x1, y1);
         this.radius = radius;
+    }
+
+    public String getFunc(double x, double y){
+        y = 500 - y;
+        double A,B,C,a,b;
+        String ans = new String("");
+        B = (x - this.realX);
+        A = (this.realY - y);
+        C = this.realX * y - x * this.realY;
+        a = this.realX;
+        b = this.realY;
+
+        double nY1, nY2, n, k ,m;
+        double nX1, nX2;
+
+        if ( A == 0 ){
+            return ans = "x: " + (a + this.radius) + " ; y: " + (500-b);
+        }
+        if ( B == 0){
+            return ans = "x: " + a + " ; y: " + (500-b + this.radius);
+        }
+
+
+        n = (B*B)/(A*A)+1;
+        k = ( 2*(C*B)/(A*A) + 2*(B*a)/A - 2*b);
+        m = ( (C*C)/(A*A) + 2*C*a/A + a*a + b*b - this.getRadius()*this.getRadius() );
+        double D = Math.sqrt(k*k - 4*n*m);
+        nY1 = (-k + D)/(2*n);
+        nY2 = (-k - D)/(2*n);
+
+        nX1 = (C + B*nY1)/(-A);
+        nX2 = (C + B*nY2)/(-A);
+
+        if ( (nY1 - this.realY)*(nY1 - this.realY) + (nX1 - this.realX)*(nX1 - this.realX) >
+                (nY2 - this.realY)*(nY2 - this.realY) + (nX2 - this.realX)*(nX2 - this.realX) ){
+            ans = "x: " + Math.round(nX2) + " ; y: " + Math.round(500-nY2);
+        } else ans = "x: " + Math.round(nX1) + " ; y: " +  Math.round(500-nY1);
+        return ans;
     }
 }
 

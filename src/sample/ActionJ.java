@@ -3,6 +3,7 @@ package sample;
 import javafx.beans.InvalidationListener;
 import javafx.collections.*;
 import javafx.scene.control.ComboBox;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.StrokeLineCap;
 import sample.GeometricObject.*;
 import javafx.application.Application;
@@ -54,19 +55,19 @@ class ActionJ {
 //        }
         switch (commandLine[0]) {
             case "circle":
-                if ( commandLine.length != 5) return "Wrong command";
+                if ( commandLine.length != 5) return "Wrong command circle";
                 check = createCircle(commandLine);
                 if (check != null) return check;
                 gcDrawCircles(gc, commandLine[4]);
                 break;
             case "line":
-                if ( commandLine.length != 6) return "Wrong command";
+                if ( commandLine.length != 6) return "Wrong command line";
                 check = createLine(commandLine);
                 gcDrawLines(gc, commandLine[5]);
                 if (check != null) return check;
                 break;
             case "bez":
-                if ( commandLine.length != 8) return "Wrong command";
+                if ( commandLine.length != 8) return "Wrong command bez";
                 check = createBezier(commandLine);
                 gcDrawBezier(gc, commandLine[7]);
                 if (check != null) return check;
@@ -80,18 +81,23 @@ class ActionJ {
                 drawShapes(gc);
                 break;
             case "color":
-                if ( commandLine.length != 3) return "Wrong command";
+                if ( commandLine.length != 3) return "Wrong command color";
                 check = changeDrawColor(commandLine[1], commandLine[2], gc);
                 if ( check != null) return check;
                 break;
             case "dash":
-                if ( commandLine.length != 3) return "Wrong command";
+                if ( commandLine.length != 3) return "Wrong command dash";
                 check = changeDrawDash(commandLine[2], Double.parseDouble(commandLine[1]), gc);
                 if ( check != null) return check;
                 break;
             case "rotation":
-                if ( commandLine.length != 3) return "Wrong command";
+                if ( commandLine.length != 3) return "Wrong command rotation";
                 check = rotationDraw(commandLine[2], Double.parseDouble(commandLine[1]), gc);
+                if ( check != null) return check;
+                break;
+            case "near":
+                if ( commandLine.length != 4) return "Wrong command near";
+                check = nearPoint(Double.parseDouble(commandLine[1]),Double.parseDouble(commandLine[2]),commandLine[3],gc);
                 if ( check != null) return check;
                 break;
             default:
@@ -112,10 +118,13 @@ class ActionJ {
     }
 
     private static void gcDrawCircles(GraphicsContext gc, String id){
+        gc.beginPath();
         gc.setStroke(listOfDrawsCircles.get(id).getColor());
         gc.setLineDashes(listOfDrawsCircles.get(id).getDashes());
-        gc.strokeOval(listOfDrawsCircles.get(id).getPointX1(), listOfDrawsCircles.get(id).getPointY1(),
-                listOfDrawsCircles.get(id).getRadius(), listOfDrawsCircles.get(id).getRadius() );
+        gc.strokeOval(listOfDrawsCircles.get(id).getPointX1() - listOfDrawsCircles.get(id).getRadius(),
+                listOfDrawsCircles.get(id).getPointY1() - listOfDrawsCircles.get(id).getRadius(),
+                listOfDrawsCircles.get(id).getRadius()*2, listOfDrawsCircles.get(id).getRadius()*2 );
+        gc.stroke();
     }
 
     private static void gcDrawBezier(GraphicsContext gc, String id){
@@ -137,7 +146,10 @@ class ActionJ {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
         gc.strokeRect(0,0,800,500);
-        gc.strokeOval(50,50 , 50,50);
+       // gc.strokeOval(50-20,50-20 , 20*2,20*2);
+        //gc.strokeLine(50,50,70,50);
+        //gc.strokeArc(100-25, 100-25, 50, 50, 0, 360, ArcType.OPEN);
+
         //gc.beginPath();
         //gc.moveTo(10,10); for fill gc.fill()
 
@@ -193,8 +205,8 @@ class ActionJ {
         }
 
         listOfDrawsCircles.put(command[4], new Circle(
-                Double.parseDouble(command[1]) - Double.parseDouble(command[3])/2,
-                Double.parseDouble(command[2]) - Double.parseDouble(command[3])/2,
+                Double.parseDouble(command[1]),
+                Double.parseDouble(command[2]),
                 Double.parseDouble(command[3]),
                 command[4]));
 
@@ -230,26 +242,26 @@ class ActionJ {
         if ( listOfDrawsLines.containsKey(id[0])) {
             result = "Object: line;  Name = " + listOfDrawsLines.get(id[0]).getId()
                     + ";  X1 = " + listOfDrawsLines.get(id[0]).getPointX1()
-                    + ";  Y1 = " + listOfDrawsLines.get(id[0]).getPointY1()
+                    + ";  Y1 = " + (500 - listOfDrawsLines.get(id[0]).getPointY1())
                     + ";  X2 = " + listOfDrawsLines.get(id[0]).getPointX2()
-                    + ";  Y2 = " + listOfDrawsLines.get(id[0]).getPointY2();
+                    + ";  Y2 = " + (500 - listOfDrawsLines.get(id[0]).getPointY2());
         }
 
         if ( listOfDrawsCircles.containsKey(id[0])){
             result = "Object: line;  Name = " + listOfDrawsCircles.get(id[0]).getId()
-                    + ";  X = " + listOfDrawsCircles.get(id[0]).getPointX1()
-                    + ";  Y = " + listOfDrawsCircles.get(id[0]).getPointY1()
+                    + ";  X = " + listOfDrawsCircles.get(id[0]).getPointX1() + listOfDrawsCircles.get(id[0]).getRadius()/2
+                    + ";  Y = " + (500 - listOfDrawsCircles.get(id[0]).getPointY1() - listOfDrawsCircles.get(id[0]).getRadius()/2)
                     + ";  radius = " + listOfDrawsCircles.get(id[0]).getRadius();
         }
 
         if ( listOfDrawsBezier.containsKey(id[0])) {
             result = "Object: line;  Name = " + listOfDrawsBezier.get(id[0]).getId()
                     + ";  X1 = " + listOfDrawsBezier.get(id[0]).getPointX1()
-                    + ";  Y1 = " + listOfDrawsBezier.get(id[0]).getPointY1()
+                    + ";  Y1 = " + (500 - listOfDrawsBezier.get(id[0]).getPointY1())
                     + ";  X2 = " + listOfDrawsBezier.get(id[0]).getPointX2()
-                    + ";  Y2 = " + listOfDrawsBezier.get(id[0]).getPointY2()
+                    + ";  Y2 = " + (500 - listOfDrawsBezier.get(id[0]).getPointY2())
                     + ";  X3 = " + listOfDrawsBezier.get(id[0]).getPointX3()
-                    + ";  Y3 = " + listOfDrawsBezier.get(id[0]).getPointY3();
+                    + ";  Y3 = " + (500 - listOfDrawsBezier.get(id[0]).getPointY3());
         }
 
         return result;
@@ -444,6 +456,20 @@ class ActionJ {
 
         return "Wrong name";
     }
+
+    private String nearPoint(double x1, double y1, String id, GraphicsContext gc){
+        String points;
+        if (listOfDrawsLines.containsKey(id)) {
+            points = listOfDrawsLines.get(id).getFunc(x1,y1);
+            return points;
+        }
+        if (listOfDrawsCircles.containsKey(id)){
+            points = listOfDrawsCircles.get(id).getFunc(x1,y1);
+            return points;
+        }
+        return null;
+    }
+
 
     }
 
