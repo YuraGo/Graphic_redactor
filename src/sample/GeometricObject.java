@@ -10,7 +10,6 @@ public class GeometricObject {
     private String id;
     private double pointX1, pointY1;
     private Color color;
-    //private StrokeLineCap lineCap;
     private double dashes;
 
     public GeometricObject(double pointX1, double pointY1, String id ){
@@ -66,10 +65,6 @@ public class GeometricObject {
     public int getCopyCounter(){
         return this.copyCounter;
     }
-
-    //private static HashMap<String, GeometricObject> allDraws = new HashMap<>();
-
-
 
 }
 
@@ -149,6 +144,10 @@ class StrokeLine extends GeometricObject {
         }
 
         return ans;
+    }
+
+    public String setCut(double x1, double y1, double x2, double y2){
+        return null;
     }
 }
 
@@ -266,7 +265,6 @@ class BezierLine extends GeometricObject{
         for( double i = 0; i <= 1; i+=0.005){
             xC = (1-i)*(1-i)*this.getPointX1() + 2*(1-i)*i*this.pointX2 + i*i*this.pointX3;
             yC = (1-i)*(1-i)*(500-this.getPointY1()) + 2*(1-i)*i*(500-this.pointY2) + i*i*(500-this.pointY3);
-            System.out.println("X: " + xC + " Y: " + yC);
             countL = (xC-x)*(xC-x)+(yC - y)*(yC - y);
             if (prevL > countL || i == 0){
                 prevL = countL;

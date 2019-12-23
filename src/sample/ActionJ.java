@@ -110,6 +110,16 @@ class ActionJ {
                 check = copyOf(commandLine[1], gc);
                 if (check != null) return check;
                 break;
+            case "clip":
+                if ( commandLine.length != 7) return "Wrong command projection";
+                check = clipDraw(commandLine, gc);
+                if ( check != null) return check;
+                break;
+            case "cut":
+                if ( commandLine.length != 6) return "Wrong command projection";
+                check = cutDraw(commandLine, gc);
+                if ( check != null) return check;
+                break;
             default:
                 drawShapes(gc);
                 return "Error";
@@ -155,6 +165,8 @@ class ActionJ {
         //gc.setLineDashes(8);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0,0,800,500);
         gc.strokeRect(0, 0, 800, 500);
         // gc.strokeOval(50-20,50-20 , 20*2,20*2);
         //gc.strokeLine(50,50,70,50);
@@ -420,7 +432,6 @@ class ActionJ {
         return null;
     }
 
-    // povorot bezier po pervoi to4ki dlya raznoobraziya
     private String rotationDraw(String id, double angle, GraphicsContext gc) {
         if (listOfDrawsLines.containsKey(id)) {
             angle = angle * Math.PI / 180;
@@ -523,5 +534,29 @@ class ActionJ {
             return null;
         }
         return "Id does not exist";
+    }
+
+    private String clipDraw( String[] com, GraphicsContext gc){
+        gc.setFill(Color.WHITE);
+        try {
+            gc.fillPolygon(new double[]{ Double.parseDouble(com[1]), Double.parseDouble(com[3]),
+            Double.parseDouble(com[5])}, new double[]{500-Double.parseDouble(com[2]),
+                    500-Double.parseDouble(com[4]), 500-Double.parseDouble(com[6])}, 3);
+
+        } catch (NumberFormatException e) {
+            return "Error in cordinate";
+        }
+        return null;
+    }
+
+    private String cutDraw(String[] com, GraphicsContext gc){
+        String errorCheck;
+        if (listOfDrawsLines.containsKey(com[5])){
+            errorCheck = copyOf(com[5] , gc);
+            if ( errorCheck == null){
+
+            }
+        }
+        return null;
     }
 }
