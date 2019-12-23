@@ -138,13 +138,20 @@ class ActionJ {
     }
 
     private static void gcDrawCircles(GraphicsContext gc, String id) {
-        gc.beginPath();
         gc.setStroke(listOfDrawsCircles.get(id).getColor());
         gc.setLineDashes(listOfDrawsCircles.get(id).getDashes());
-        gc.strokeOval(listOfDrawsCircles.get(id).getPointX1() - listOfDrawsCircles.get(id).getRadius(),
+        //gc.strokeOval(listOfDrawsCircles.get(id).getPointX1() - listOfDrawsCircles.get(id).getRadius(),
+          //      listOfDrawsCircles.get(id).getPointY1() - listOfDrawsCircles.get(id).getRadius(),
+            //    listOfDrawsCircles.get(id).getRadius() * 2, listOfDrawsCircles.get(id).getRadius() * 2);
+       // circle 200 200 50 a
+        gc.strokeArc(listOfDrawsCircles.get(id).getPointX1() - listOfDrawsCircles.get(id).getRadius(),
                 listOfDrawsCircles.get(id).getPointY1() - listOfDrawsCircles.get(id).getRadius(),
-                listOfDrawsCircles.get(id).getRadius() * 2, listOfDrawsCircles.get(id).getRadius() * 2);
-        gc.stroke();
+                listOfDrawsCircles.get(id).getRadius() * 2,
+                listOfDrawsCircles.get(id).getRadius() * 2,
+                listOfDrawsCircles.get(id).getStartAngle(),
+                listOfDrawsCircles.get(id).getArcExtent(),
+                ArcType.OPEN);
+        //gc.strokeArc(100-25, 500-100-25, 50, 50, 0, 360, ArcType.OPEN);
     }
 
     private static void gcDrawBezier(GraphicsContext gc, String id) {
@@ -159,35 +166,14 @@ class ActionJ {
 
     private static void drawShapes(GraphicsContext gc) {
         gc.clearRect(0, 0, 800, 500);
-        //gc.setFill(Color.BLACK);
-        //gc.setLineCap(StrokeLineCap.BUTT);
-        //gc.setLineDashOffset(10);
-        //gc.setLineDashes(8);
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
         gc.setFill(Color.WHITE);
         gc.fillRect(0,0,800,500);
         gc.strokeRect(0, 0, 800, 500);
-        // gc.strokeOval(50-20,50-20 , 20*2,20*2);
-        //gc.strokeLine(50,50,70,50);
-        //gc.strokeArc(100-25, 100-25, 50, 50, 0, 360, ArcType.OPEN);
 
-        //gc.beginPath();
-        //gc.moveTo(10,10); for fill gc.fill()
+        gc.strokeArc(100-25,400-25, 50,50, 225, 180, ArcType.OPEN);
 
-        //gc.quadraticCurveTo(20,20,60,90);
-
-        //gc.beginPath();
-        //gc.moveTo(75,40);
-        //gc.bezierCurveTo(75,37,70,25,50,25);
-//        gc.bezierCurveTo(20,25,20,62.5,20,62.5);
-//        gc.bezierCurveTo(20,80,40,102,75,120);
-//        gc.bezierCurveTo(110,102,130,80,130,62.5);
-//        gc.bezierCurveTo(130,62.5,130,25,100,25);
-//        gc.bezierCurveTo(85,25,75,37,75,40);
-        //gc.stroke();
-
-        //gc.strokeLine(0, 0, 100, 100);
         gc.fillPolygon(new double[]{10, 40, 10, 40},
                 new double[]{210, 210, 240, 240}, 4);
 
@@ -549,14 +535,35 @@ class ActionJ {
         return null;
     }
 
-    private String cutDraw(String[] com, GraphicsContext gc){
+    private String cutDraw(String[] com, GraphicsContext gc){ // line 20 100 100 100 a   cut 50 0 65 200 a  cut 50 0 50 200 a
         String errorCheck;
         if (listOfDrawsLines.containsKey(com[5])){
             errorCheck = copyOf(com[5] , gc);
             if ( errorCheck == null){
+                listOfDrawsLines.get(com[5]).setCut(Double.parseDouble(com[1]), Double.parseDouble(com[2]),
+                        Double.parseDouble(com[3]), Double.parseDouble(com[4]), 1);
+                listOfDrawsLines.get(com[5]+listOfDrawsLines.get(com[5]).getCopyCounter()).setCut(Double.parseDouble(com[1]), Double.parseDouble(com[2]),
+                        Double.parseDouble(com[3]), Double.parseDouble(com[4]), 2);
+                gcDrawLines(gc, com[5]+listOfDrawsLines.get(com[5]).getCopyCounter());
+                //update(gc, com[5]);
+                gcDrawLines(gc, listOfDrawsLines.get(com[5]).getId());
+            }
+        }
+
+        if (listOfDrawsCircles.containsKey(com[5])){
+            errorCheck = copyOf(com[5] , gc);
+            if ( errorCheck == null){
+                listOfDrawsCircles.get(com[5]).setCut(Double.parseDouble(com[1]), Double.parseDouble(com[2]),
+                        Double.parseDouble(com[3]), Double.parseDouble(com[4]), 1);
+                listOfDrawsCircles.get(com[5]+listOfDrawsCircles.get(com[5]).getCopyCounter()).setCut(Double.parseDouble(com[1]), Double.parseDouble(com[2]),
+                        Double.parseDouble(com[3]), Double.parseDouble(com[4]), 2);
+                gcDrawCircles(gc, com[5]+listOfDrawsCircles.get(com[5]).getCopyCounter());
+                //update(gc, com[5]);
+                gcDrawCircles(gc, listOfDrawsCircles.get(com[5]).getId());
 
             }
         }
+
         return null;
     }
 }
