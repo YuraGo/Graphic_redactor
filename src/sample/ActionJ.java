@@ -120,6 +120,10 @@ class ActionJ {
                 check = cutDraw(commandLine, gc);
                 if ( check != null) return check;
                 break;
+            case "save":
+                break;
+            case "load":
+                break;
             default:
                 drawShapes(gc);
                 return "Error";
