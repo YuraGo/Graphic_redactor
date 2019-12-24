@@ -1,9 +1,6 @@
 package sample;
 
-import javafx.scene.shape.*;
 import javafx.scene.paint.Color;
-import java.util.HashMap;
-import java.util.Vector;
 
 public class GeometricObject {
     private int copyCounter;
@@ -66,6 +63,9 @@ public class GeometricObject {
         return this.copyCounter;
     }
 
+    public void setCopyCounter(int copyCounter) {
+        this.copyCounter = copyCounter;
+    }
 }
 
 class StrokeLine extends GeometricObject {

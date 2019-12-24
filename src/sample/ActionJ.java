@@ -1,34 +1,20 @@
 package sample;
 
-import javafx.beans.InvalidationListener;
-import javafx.collections.*;
-import javafx.scene.control.ComboBox;
-import javafx.scene.shape.ArcType;
-import javafx.scene.shape.StrokeLineCap;
-import sample.GeometricObject.*;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 class ActionJ {
     private static HashMap<String, StrokeLine> listOfDrawsLines = new HashMap<>();
     private static HashMap<String, Circle> listOfDrawsCircles = new HashMap<>();
     private static HashMap<String, BezierLine> listOfDrawsBezier = new HashMap<>();
-//    public <Hbox> CreateAll(<Hbox> hbox) {
-//
-//        Button button1 = new Button("Add");
-//        Button button2 = new Button("Remove");
-//        HBox.setHgrow(button1, Priority.ALWAYS);
-//        HBox.setHgrow(button2, Priority.ALWAYS);
-//        button1.setMaxWidth(Double.MAX_VALUE);
-//        button2.setMaxWidth(Double.MAX_VALUE);
-//        hbox.getChildren().addAll(button1, button2);
-//    }
 
-    static void setListOfDraws(ComboBox listOfDraws) {
+
+    private static void setListOfDraws(ComboBox listOfDraws) {
 
         listOfDraws.getItems().clear();
 
@@ -121,8 +107,11 @@ class ActionJ {
                 if ( check != null) return check;
                 break;
             case "save":
+                DOMxmlWriter.save(listOfDrawsLines, listOfDrawsCircles, listOfDrawsBezier);
                 break;
             case "load":
+                DOMxmlReader.load(listOfDrawsLines, listOfDrawsCircles, listOfDrawsBezier);
+                update(gc, null);
                 break;
             default:
                 drawShapes(gc);
@@ -176,10 +165,10 @@ class ActionJ {
         gc.fillRect(0,0,800,500);
         gc.strokeRect(0, 0, 800, 500);
 
-        gc.strokeArc(100-25,400-25, 50,50, 225, 180, ArcType.OPEN);
+        //gc.strokeArc(100-25,400-25, 50,50, 225, 180, ArcType.OPEN);
 
-        gc.fillPolygon(new double[]{10, 40, 10, 40},
-                new double[]{210, 210, 240, 240}, 4);
+        //gc.fillPolygon(new double[]{10, 40, 10, 40},
+          //      new double[]{210, 210, 240, 240}, 4);
 
     }
 
